@@ -266,7 +266,9 @@ class ConfluenceTranslator(BaseTranslator):
         #         'start' attribute of an ordered list tag; limiting to
         #         auto-enumeration items only.
         list_style_type = None
-        if node['enumtype'] == 'upperalpha':
+        if 'enumtype' not in node:
+            pass
+        elif node['enumtype'] == 'upperalpha':
             list_style_type = 'upper-alpha'
         elif node['enumtype'] == 'loweralpha':
             list_style_type = 'lower-alpha'
@@ -280,10 +282,11 @@ class ConfluenceTranslator(BaseTranslator):
             ConfluenceLogger.warn(
                 'unknown enumerated list type: {}'.format(node['enumtype']))
 
-        if 'style' not in attribs:
-            attribs['style'] = ''
-        attribs['style'] = '{}list-style-type: {};'.format(
-            attribs['style'], list_style_type)
+        if list_style_type:
+            if 'style' not in attribs:
+                attribs['style'] = ''
+            attribs['style'] = '{}list-style-type: {};'.format(
+                attribs['style'], list_style_type)
 
         self.body.append(self._start_tag(node, 'ol', suffix=self.nl, **attribs))
         self.context.append(self._end_tag(node))
